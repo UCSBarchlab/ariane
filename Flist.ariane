@@ -49,11 +49,12 @@ common/submodules/common_cells/src/rstgen_bypass.sv
 common/submodules/common_cells/src/cdc_2phase.sv
 common/submodules/common_cells/src/unread.sv
 common/submodules/common_cells/src/popcount.sv
-corev_apu/fpga-support/rtl/SyncSpRamBeNx64.sv
 corev_apu/axi_mem_if/src/axi2mem.sv
-corev_apu/src/tech_cells_generic/src/pulp_clock_gating.sv
-corev_apu/src/tech_cells_generic/src/cluster_clock_inverter.sv
-corev_apu/src/tech_cells_generic/src/pulp_clock_mux2.sv
+corev_apu/src/tech_cells_generic/src/deprecated/cluster_clk_cells.sv
+corev_apu/src/tech_cells_generic/src/deprecated/pulp_clk_cells.sv
+common/local/util/tc_sram_wrapper.sv
+corev_apu/src/tech_cells_generic/src/rtl/tc_sram.sv
+corev_apu/src/tech_cells_generic/src/rtl/tc_clk.sv
 core/axi_adapter.sv
 core/alu.sv
 core/fpu_wrap.sv
@@ -78,6 +79,7 @@ core/issue_read_operands.sv
 core/issue_stage.sv
 core/load_unit.sv
 core/load_store_unit.sv
+core/lsu_bypass.sv
 core/mmu_sv39/mmu.sv
 core/mult.sv
 core/multiplier.sv
