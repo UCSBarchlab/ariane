@@ -927,27 +927,27 @@ module cva6 import ariane_pkg::*; #(
 //pragma translate_on
 
 `ifdef RVFI_TRACE
-  always_comb
+  always_comb begin
     for (int i = 0; i < NR_COMMIT_PORTS; i++) begin
       logic exception, mem_exception;
-      exception = commit_instr_id_commit[i].valid && commit_instr_id_commit[i].ex.valid && ex_commit.valid;
+      exception = commit_instr_id_commit[i].valid && ex_commit.valid;
       mem_exception = exception &&
-        (commit_instr_id_commit[i].ex.cause == riscv::INSTR_ADDR_MISALIGNED ||
-         commit_instr_id_commit[i].ex.cause == riscv::INSTR_ACCESS_FAULT ||
-         commit_instr_id_commit[i].ex.cause == riscv::ILLEGAL_INSTR ||
-         commit_instr_id_commit[i].ex.cause == riscv::LD_ADDR_MISALIGNED ||
-         commit_instr_id_commit[i].ex.cause == riscv::LD_ACCESS_FAULT ||
-         commit_instr_id_commit[i].ex.cause == riscv::ST_ADDR_MISALIGNED ||
-         commit_instr_id_commit[i].ex.cause == riscv::ST_ACCESS_FAULT ||
-         commit_instr_id_commit[i].ex.cause == riscv::INSTR_PAGE_FAULT ||
-         commit_instr_id_commit[i].ex.cause == riscv::LOAD_PAGE_FAULT ||
-         commit_instr_id_commit[i].ex.cause == riscv::STORE_PAGE_FAULT);
+        (ex_commit.cause == riscv::INSTR_ADDR_MISALIGNED ||
+         ex_commit.cause == riscv::INSTR_ACCESS_FAULT ||
+         ex_commit.cause == riscv::ILLEGAL_INSTR ||
+         ex_commit.cause == riscv::LD_ADDR_MISALIGNED ||
+         ex_commit.cause == riscv::LD_ACCESS_FAULT ||
+         ex_commit.cause == riscv::ST_ADDR_MISALIGNED ||
+         ex_commit.cause == riscv::ST_ACCESS_FAULT ||
+         ex_commit.cause == riscv::INSTR_PAGE_FAULT ||
+         ex_commit.cause == riscv::LOAD_PAGE_FAULT ||
+         ex_commit.cause == riscv::STORE_PAGE_FAULT);
       // when rvfi_valid, the instruction is executed
-      rvfi_o[i].valid    = (commit_ack[i] && !commit_instr_id_commit[i].ex.valid) ||
-        (exception && (commit_instr_id_commit[i].ex.cause == riscv::ENV_CALL_MMODE ||
-                  commit_instr_id_commit[i].ex.cause == riscv::ENV_CALL_SMODE ||
-                  commit_instr_id_commit[i].ex.cause == riscv::ENV_CALL_UMODE));
-      rvfi_o[i].insn     = commit_instr_id_commit[i].ex.tval[31:0];
+      rvfi_o[i].valid    = (commit_ack[i] && !ex_commit.valid) ||
+        (exception && (ex_commit.cause == riscv::ENV_CALL_MMODE ||
+                  ex_commit.cause == riscv::ENV_CALL_SMODE ||
+                  ex_commit.cause == riscv::ENV_CALL_UMODE));
+      rvfi_o[i].insn     = ex_commit.valid ? ex_commit.tval[31:0] : commit_instr_id_commit[i].ex.tval[31:0];
       // when trap, the instruction is not executed
       rvfi_o[i].trap     = mem_exception;
       rvfi_o[i].mode     = debug_mode ? 2'b10 : priv_lvl;
@@ -958,6 +958,7 @@ module cva6 import ariane_pkg::*; #(
       rvfi_o[i].rd_wdata = ariane_pkg::is_rd_fpr(commit_instr_id_commit[i].op) == 0 ? wdata_commit_id[i] : commit_instr_id_commit[i].result;
       rvfi_o[i].pc_rdata = commit_instr_id_commit[i].pc;
     end
+  end
 `endif
 
 endmodule // ariane
